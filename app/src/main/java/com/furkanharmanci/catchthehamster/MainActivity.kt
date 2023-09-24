@@ -7,6 +7,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import com.furkanharmanci.catchthehamster.databinding.ActivityMainBinding
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
     private var handler : Handler = Handler(Looper.getMainLooper())
     private var imageArray = ArrayList<ImageView>()
     private var number : Int = 0
+    private lateinit var myCount : CountDownTimer
+    private lateinit var startButton : Button
+    private lateinit var quitButton : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +46,8 @@ class MainActivity : AppCompatActivity() {
         imageArray.add(binding.imgTwelve)
 
         // başlatma ve sonlandırma butonlarının tanımlanması
-        val startButton = binding.start
-        val quitButton = binding.quit
+        startButton = binding.start
+        quitButton = binding.quit
 
         imageInvisible()
 
@@ -63,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         binding.score.text = score
     }
 
-    fun imageInvisible() {
+    private fun imageInvisible() {
         /// uygulama başlarken tüm görüntülerin görünmez olmasını sağlayan döngü
         for (image in imageArray) {
             image.visibility = View.INVISIBLE
@@ -129,6 +133,22 @@ class MainActivity : AppCompatActivity() {
     }
     /// sonlandırma buton methodu
     private fun eventQuit() {
-        finish()
+        val alertGameQuit = AlertDialog.Builder(this@MainActivity)
+        alertGameQuit.setTitle("Quit?")
+        alertGameQuit.setMessage("Do you want to quit the game?")
+        alertGameQuit.setPositiveButton("Yes") {
+                p0, p1 -> val time = "Time : 0"
+            val score = "Score: 0"
+            binding.time.text = time
+            binding.score.text = score
+            myCount.cancel()
+            imageInvisible()
+            handler.removeCallbacks(runnable)
+            Toast.makeText(this@MainActivity, "Quited!", Toast.LENGTH_SHORT).show()
+        }
+        alertGameQuit.setNegativeButton("No") {
+                p0, p1 -> Toast.makeText(this@MainActivity, "Not Quited!", Toast.LENGTH_SHORT).show()
+        }
+        alertGameQuit.show()
     }
 }
